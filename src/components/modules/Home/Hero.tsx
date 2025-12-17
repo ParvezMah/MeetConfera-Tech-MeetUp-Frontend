@@ -9,7 +9,7 @@ import { mockEvents } from "@/lib/mockEvents";
 import { HeroProps } from "@/types/heroProps";
 
 export function Hero({
-  onNavigate,
+  onNavigate = () => {},
   isAuthenticated = false,
   heroStats = [
     { value: "2,847", label: "Active Users" },

@@ -26,16 +26,16 @@ const RegisterForm = () => {
             <Input id="name" name="name" type="text" placeholder="John Doe" />
             <InputFieldError field="name" state={state} />
           </Field>
-          {/* Address */}
+          {/* Location */}
           <Field>
-            <FieldLabel htmlFor="address">Address</FieldLabel>
+            <FieldLabel htmlFor="location">Location</FieldLabel>
             <Input
-              id="address"
-              name="address"
+              id="location"
+              name="location"
               type="text"
               placeholder="123 Main St"
             />
-            <InputFieldError field="address" state={state} />
+            <InputFieldError field="location" state={state} />
           </Field>
           {/* Email */}
           <Field>

@@ -1,7 +1,7 @@
 import React from "react";
 
 export interface HeroProps {
-  onNavigate: (page: string) => void;
+  onNavigate?: (page: string) => void;  // I will use it later when i need it
   isAuthenticated?: boolean;
   heroStats?: Array<{
     value: string;

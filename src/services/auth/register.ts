@@ -9,13 +9,13 @@ import { loginUser } from "./loginUser";
 
 export const register = async (_currentState: any, formData: any): Promise<any> => {
     try {
-        console.log(formData.get("address"));
+
         const payload = {
             name: formData.get('name'),
-            address: formData.get('address'),
             email: formData.get('email'),
-            contactNumber: formData.get("contactNumber"),
             password: formData.get('password'),
+            contactNumber: formData.get("contactNumber"),
+            location: formData.get('location'),
             confirmPassword: formData.get('confirmPassword'),
         }
 
@@ -28,9 +28,9 @@ export const register = async (_currentState: any, formData: any): Promise<any> 
             password: validatedPayload.password,
             user: {
                 name: validatedPayload.name,
-                address: validatedPayload.address,
                 email: validatedPayload.email,
                 contactNumber: validatedPayload.contactNumber,
+                location: validatedPayload.location,
             }
         }
 

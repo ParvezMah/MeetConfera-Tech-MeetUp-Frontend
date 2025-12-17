@@ -55,6 +55,7 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
             Change Password
           </Link>
         </DropdownMenuItem>
+
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleLogout}

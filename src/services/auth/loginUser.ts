@@ -38,6 +38,7 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         const result = await res.json();
 
         const setCookieHeaders = res.headers.getSetCookie();
+        console.log({setCookieHeaders})
 
         if (setCookieHeaders && setCookieHeaders.length > 0) {
             setCookieHeaders.forEach((cookie: string) => {
