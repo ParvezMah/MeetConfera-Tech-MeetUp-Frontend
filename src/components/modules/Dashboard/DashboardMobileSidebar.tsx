@@ -31,6 +31,7 @@ const DashboardMobileSidebar = ({
           <span className="text-xl font-bold text-primary">MeetConfera</span>
         </Link>
       </div>
+      
       <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
       {/* Navigation */}

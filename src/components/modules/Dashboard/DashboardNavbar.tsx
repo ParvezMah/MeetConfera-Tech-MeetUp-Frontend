@@ -10,10 +10,10 @@ const DashboardNavbar = async () => {
   const dashboardHome = getDefaultDashboardRoute(userInfo.role);
 
   return (
-    <DashboardNavbarContent
-      userInfo={userInfo}
-      navItems={navItems}
-      dashboardHome={dashboardHome}
+    <DashboardNavbarContent 
+      userInfo={userInfo} // This props only DashBoardMobileSidebar
+      navItems={navItems} // This props only DashBoardMobileSidebar
+      dashboardHome={dashboardHome} // This props only DashBoardMobileSidebar
     />
   );
 };

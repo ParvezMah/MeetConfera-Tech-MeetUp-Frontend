@@ -25,6 +25,7 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
   };
   return (
     <DropdownMenu>
+      {/* UserDropDown Logo */}
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon" className="rounded-full">
           <span className="text-sm font-semibold">
@@ -32,6 +33,8 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
           </span>
         </Button>
       </DropdownMenuTrigger>
+
+      {/* UserDropDown Content */}
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
