@@ -1,5 +1,5 @@
 const MyHostedEvents = () => {
-  return <div>MyHostedEvents</div>;
+  return <div>My Hosted Events</div>;
 };
 
 export default MyHostedEvents;

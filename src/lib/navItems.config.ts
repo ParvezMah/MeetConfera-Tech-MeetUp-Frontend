@@ -42,21 +42,9 @@ export const userNavItems: NavSection[] = [
     title: "My Events",
     items: [
       {
-        title: "Upcoming Events",
-        href: "/dashboard/events/upcoming",
-        icon: "Calendar",
-        roles: ["USER"],
-      },
-      {
-        title: "Joined Events",
-        href: "/dashboard/events/join",
+        title: "My Events",
+        href: "/dashboard/my-events",
         icon: "History",
-        roles: ["USER"],
-      },
-      {
-        title: "Saved Events",
-        href: "/dashboard/events/saved",
-        icon: "Bookmark",
         roles: ["USER"],
       },
     ],
@@ -69,19 +57,19 @@ export const hostNavItems: NavSection[] = [
     items: [
       {
         title: "Create Event",
-        href: "/dashboard/host/create-event",
+        href: "/host/dashboard/create-event",
         icon: "PlusCircle",
         roles: ["HOST"],
       },
       {
         title: "My Hosted Events",
-        href: "/dashboard/host/events",
+        href: "/host/dashboard/my-hosted-events",
         icon: "CalendarDays",
         roles: ["HOST"],
       },
       {
         title: "Participants",
-        href: "/dashboard/host/participants",
+        href: "/host/dashboard/participants",
         icon: "Users",
         roles: ["HOST"],
       },
@@ -92,7 +80,7 @@ export const hostNavItems: NavSection[] = [
     items: [
       {
         title: "Payments",
-        href: "/dashboard/host/payments",
+        href: "/host/dashboard/payments",
         icon: "CreditCard",
         roles: ["HOST"],
       },
@@ -122,12 +110,7 @@ export const adminNavItems: NavSection[] = [
                 href: "/admin/dashboard/hosts-management",
                 icon: "UserCog", // ✅ String
                 roles: ["ADMIN"],
-            }
-        ],
-    },
-    {
-        title: "Host Management",
-        items: [
+            },
             {
                 title: "Host Applications",
                 href: "/admin/dashboard/host-applications",
@@ -141,14 +124,14 @@ export const adminNavItems: NavSection[] = [
         title: "Event Management",
         items: [
             {
-                title: "All Events",
+                title: "Events",
                 href: "/admin/dashboard/events-management",
                 icon: "CalendarRange",
                 roles: ["ADMIN"],
             },
             {
-                title: "Event Categories",
-                href: "/admin/dashboard/categories-management",
+                title: "Payments",
+                href: "/admin/dashboard/payments",
                 icon: "Tags",
                 roles: ["ADMIN"],
             },
