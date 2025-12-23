@@ -62,7 +62,6 @@ export async function proxy(request: NextRequest) {
             return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole as UserRole), request.url))
         }
     }
-    console.log(userRole);
 
     return NextResponse.next();
 }

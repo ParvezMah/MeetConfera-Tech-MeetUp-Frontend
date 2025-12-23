@@ -131,7 +131,7 @@ export const adminNavItems: NavSection[] = [
             },
             {
                 title: "Payments",
-                href: "/admin/dashboard/payments",
+                href: "/admin/dashboard/payment-management",
                 icon: "Tags",
                 roles: ["ADMIN"],
             },
