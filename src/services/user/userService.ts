@@ -18,7 +18,6 @@ export interface IPaginationOptions {
 
 
 import { serverFetch } from "@/lib/server-fetch";
-
 import { deleteCookie } from "../auth/tokenHandlers";
 
 export async function applyHost() {
@@ -53,6 +52,32 @@ export async function getAllUsers(filters: IAdminFilters = {}, options: IPaginat
   } catch (error: any) {
     console.error('getAllUsers error', error?.message || error);
     return { success: false, message: error?.message || 'Failed to fetch users' };
+  }
+}
+
+export async function getAllAdmins(filters: IAdminFilters = {}, options: IPaginationOptions = {}) {
+  try {
+    const qs = new URLSearchParams();
+    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
+    Object.entries(options).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
+    const res = await serverFetch.get(`/admins?${qs.toString()}`);
+    return await res.json();
+  } catch (error: any) {
+    console.error('getAllAdmins error', error?.message || error);
+    return { success: false, message: error?.message || 'Failed to fetch admins' };
+  }
+}
+
+export async function getAllHosts(filters: IAdminFilters = {}, options: IPaginationOptions = {}) {
+  try {
+    const qs = new URLSearchParams();
+    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
+    Object.entries(options).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
+    const res = await serverFetch.get(`/hosts?${qs.toString()}`);
+    return await res.json();
+  } catch (error: any) {
+    console.error('getAllHosts error', error?.message || error);
+    return { success: false, message: error?.message || 'Failed to fetch hosts' };
   }
 }
 

@@ -56,21 +56,9 @@ export const hostNavItems: NavSection[] = [
     title: "Event Management",
     items: [
       {
-        title: "Create Event",
-        href: "/host/dashboard/create-event",
-        icon: "PlusCircle",
-        roles: ["HOST"],
-      },
-      {
         title: "My Hosted Events",
         href: "/host/dashboard/my-hosted-events",
         icon: "CalendarDays",
-        roles: ["HOST"],
-      },
-      {
-        title: "Participants",
-        href: "/host/dashboard/participants",
-        icon: "Users",
         roles: ["HOST"],
       },
     ],
@@ -80,7 +68,7 @@ export const hostNavItems: NavSection[] = [
     items: [
       {
         title: "Payments",
-        href: "/host/dashboard/payments",
+        href: "/host/dashboard/payment-management",
         icon: "CreditCard",
         roles: ["HOST"],
       },

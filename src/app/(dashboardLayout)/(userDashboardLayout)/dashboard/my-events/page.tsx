@@ -416,13 +416,13 @@ const MyEventsPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-600 to-orange-400 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold mb-2">My Events</h1>
           <p className="text-blue-100">Manage your event participations</p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {/* <div className="bg-white rounded-xl shadow-md p-6">
@@ -529,6 +529,16 @@ const MyEventsPage = () => {
         <div className="bg-white rounded-xl shadow-md mb-6">
           <div className="flex border-b">
             <button
+                onClick={() => setActiveTab('past')}
+                className={`flex-1 py-4 px-6 font-medium transition-colors ${
+                  activeTab === 'past'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+              Past Events ({filteredPast.length})
+            </button>
+            <button
               onClick={() => setActiveTab('upcoming')}
               className={`flex-1 py-4 px-6 font-medium transition-colors ${
                 activeTab === 'upcoming'
@@ -538,21 +548,31 @@ const MyEventsPage = () => {
             >
               Upcoming ({filteredUpcoming.length})
             </button>
-            <button
-              onClick={() => setActiveTab('past')}
-              className={`flex-1 py-4 px-6 font-medium transition-colors ${
-                activeTab === 'past'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Past Events ({filteredPast.length})
-            </button>
           </div>
         </div>
 
         {/* Events Grid */}
         <div className="pb-12">
+          {activeTab === 'past' && (
+            <>
+              {filteredPast.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredPast.map(event => renderPastEventCard(event))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <AlertCircle size={48} className="mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">No past events found</h3>
+                  <p className="text-gray-500">
+                    {searchQuery || filterType !== 'all' 
+                      ? 'Try adjusting your search or filters'
+                      : 'Your event history will appear here'
+                    }
+                  </p>
+                </div>
+              )}
+            </>
+          )}
           {activeTab === 'upcoming' && (
             <>
               {filteredUpcoming.length > 0 ? (
@@ -572,27 +592,6 @@ const MyEventsPage = () => {
                   <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                     Explore Events
                   </button>
-                </div>
-              )}
-            </>
-          )}
-
-          {activeTab === 'past' && (
-            <>
-              {filteredPast.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredPast.map(event => renderPastEventCard(event))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <AlertCircle size={48} className="mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-700 mb-2">No past events found</h3>
-                  <p className="text-gray-500">
-                    {searchQuery || filterType !== 'all' 
-                      ? 'Try adjusting your search or filters'
-                      : 'Your event history will appear here'
-                    }
-                  </p>
                 </div>
               )}
             </>

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Calendar, MapPin, Users, Clock, Star, Heart, TrendingUp, Award, DollarSign, Search } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
@@ -200,7 +201,7 @@ const UserDashboard = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-orange-600 to-orange-400 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center gap-6">
             <Image 
               src={user.image} 
@@ -225,7 +226,7 @@ const UserDashboard = () => {
       </div>
 
       {/* Stats Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, idx) => (
             <div key={idx} className="bg-white rounded-xl shadow-md p-6 flex items-center gap-4">
@@ -244,25 +245,25 @@ const UserDashboard = () => {
         <div className="bg-white rounded-xl shadow-md p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <button className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all font-medium shadow-md">
+            <Button className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all font-medium shadow-md">
               <Search size={20} />
               Explore Events
-            </button>
-            <button className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 px-6 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all font-medium shadow-md">
+            </Button>
+            <Button className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 px-6 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all font-medium shadow-md">
               <Award size={20} />
               View Profile
-            </button>
-            <button className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-6 rounded-lg hover:from-green-700 hover:to-green-800 transition-all font-medium shadow-md">
+            </Button>
+            <Button className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-6 rounded-lg hover:from-green-700 hover:to-green-800 transition-all font-medium shadow-md">
               <Users size={20} />
               Become a Host
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Tabs Navigation */}
         <div className="bg-white rounded-xl shadow-md mb-6">
           <div className="flex border-b">
-            <button
+            <Button
               onClick={() => setActiveTab('upcoming')}
               className={`flex-1 py-4 px-6 font-medium transition-colors ${
                 activeTab === 'upcoming'
@@ -271,7 +272,7 @@ const UserDashboard = () => {
               }`}
             >
               Upcoming Events ({myEvents.length})
-            </button>
+            </Button>
             {/* <button
               onClick={() => setActiveTab('past')}
               className={`flex-1 py-4 px-6 font-medium transition-colors ${
