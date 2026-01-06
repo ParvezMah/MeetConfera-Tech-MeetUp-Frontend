@@ -11,3 +11,18 @@ export function formatCurrency(amount: number): string {
     currency: 'USD',
   }).format(amount);
 }
+
+
+export const getCurrentHostId = (): string | null => {
+  if (typeof window === "undefined") return null;
+
+  const token = localStorage.getItem("token"); // or get from cookies
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1])); // decode JWT payload
+    return payload.hostId || null;
+  } catch {
+    return null;
+  }
+};

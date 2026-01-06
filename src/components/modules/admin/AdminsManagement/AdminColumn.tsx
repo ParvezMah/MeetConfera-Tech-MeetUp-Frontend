@@ -30,8 +30,8 @@ export const adminsColumns: Column<IAdmin>[] = [
     header: "Role",
     accessor: (admin) => (
       <div className="flex flex-col">
-        {/* <span className="text-sm">{admin.user?.role}</span> */}
-        <span className="text-sm bg-red-500 p-2 font-bold">Role ta Astecena Backend theke</span>
+        <span className="text-sm">{admin.user?.role}</span>
+        {/* <span className="text-sm bg-red-500 p-2 font-bold">Role ta Astecena Backend theke</span> */}
       </div>
     ),
   },

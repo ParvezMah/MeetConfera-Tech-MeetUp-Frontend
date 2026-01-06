@@ -1,91 +1,130 @@
-"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import  { Suspense } from 'react';
+import { getMyEvents, IEventFilters } from '@/services/host/hostService';
+import { TableSkeleton } from '@/components/shared/TableSkeleton';
+import MyEventsClient from '@/components/modules/Host/MyEventsHost';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Calendar, Users, TrendingUp, DollarSign } from 'lucide-react';
+import MyEventsHost from '@/components/modules/Host/MyEventsHost';
 
-import { useState } from 'react';
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { EventListItem } from '@/components/modules/Host/EventListItem';
-import { EventStatCard } from '@/components/modules/Host/EventStatCard';
-import { CreateEventModal } from '@/components/modules/Host/CreateEventModal';
+interface HostDashboardPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
 
-
-
-export default function HostEventsPage() {
-  // It will come from backend
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      eventName: 'React - Accelerator',
-      description: 'Explore blockchain technology, cryptocurrency trends, and smart contracts with Sumit Saha. Networking session included.',
-      date: '2025-12-28',
-      time: '14:00',
-      location: 'Dhaka - Startup Arena, Bangladesh',
-      maxParticipants: 40,
-      minParticipants: 10,
-      status: 'OPEN',
-      image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZXZlbnR8ZW58MHx8MHx8fDA%3D',
-      joiningFee: 300,
-      category: "BLOCKCHAIN",
-      // hostId: "fc0e7dd5-ec81-4d6f-9016-8470d0813172", // Eta dynamically ber kore nite hobe
-    }
-  ]); 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-
-  const filteredEvents = events.filter(event => 
-    event.eventName.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (filterStatus === 'all' || event.status === filterStatus)
-  );
-
-  const handleDelete = (id: number) => {
-    if (confirm('Delete this event?')) setEvents(prev => prev.filter(e => e.id !== id));
+const HostDashboardPage = async ({ searchParams }: HostDashboardPageProps) => {
+  const params = await searchParams;
+  
+  // Extract filters from search params
+  const filters: IEventFilters = {
+    category: typeof params.category === 'string' ? params.category : undefined,
+    status: typeof params.status === 'string' ? params.status : undefined,
+    search: typeof params.search === 'string' ? params.search : undefined,
+    fromDate: typeof params.fromDate === 'string' ? params.fromDate : undefined,
+    toDate: typeof params.toDate === 'string' ? params.toDate : undefined,
+    page: params.page ? Number(params.page) : 1,
+    limit: params.limit ? Number(params.limit) : 10,
   };
 
+  // Fetch events for stats
+  const result = await getMyEvents({ limit: 1000 });
+  const allEvents = result.success && result.data ? result.data : [];
+  
+  // Calculate stats
+  const totalEvents = allEvents.length;
+  const upcomingEvents = allEvents.filter((e: any) => {
+    const eventDate = new Date(e.date);
+    return eventDate > new Date() && e.status === 'OPEN';
+  }).length;
+  const totalParticipants = allEvents.reduce((sum: number, e: any) => sum + (e.participantCount || 0), 0);
+  const totalRevenue = allEvents.reduce((sum: number, e: any) => {
+    return sum + ((e.participantCount || 0) * (e.joiningFee || 0) * 0.9); // 90% host share
+  }, 0);
+
+  // Fetch paginated events
+  const paginatedResult = await getMyEvents(filters);
+  const events = paginatedResult.success && paginatedResult.data ? paginatedResult.data : [];
+  const meta = paginatedResult.meta || { page: 1, limit: 10, total: 0, pages: 0 };
+
   return (
-    <div className="bg-gray-50">
-      <div className="bg-gradient-to-r from-orange-600 to-orange-400 text-white py-8 px-4 sm:px-8">
-        <div className="mx-auto flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">My Events</h1>
-            <p className="opacity-90">Manage your hosted events</p>
-          </div>
-          <CreateEventModal />
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Host Dashboard</h1>
+        <p className="text-muted-foreground">
+          Manage your events and track your performance
+        </p>
       </div>
 
-      <div className="mx-auto p-4">
-        {/* Event Statistics Card */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <EventStatCard label="Total Events" value={events.length} />
-          <EventStatCard label="Published" value={events.filter(e => e.status === 'published').length} color="text-green-600" />
-          <EventStatCard label="Registrations" value={events.reduce((sum, e) => sum + e.minParticipants, 0)} color="text-blue-600" />           
-          <EventStatCard label="Revenue" value={`$${events.reduce((sum, e) => sum + (e.joiningFee * e.minParticipants), 0).toLocaleString()}`} color="text-purple-600" />
-        </div>
-
-        {/* Search Box & Filter Box */}
-        <div className="flex gap-4 mb-6">
-          {/* Search Box */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <Input className="pl-10" placeholder="Search..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-          </div>
-          {/* Filter Box */}
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
-             <SelectTrigger className="w-[180px]"><SelectValue placeholder="Status" /></SelectTrigger>
-             <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="OPEN">Open</SelectItem>
-             </SelectContent>
-          </Select>
-        </div>
-
-        {/* Events Card */}
-        <div className="space-y-4">
-          {filteredEvents.map(event => (
-            <EventListItem key={event.id} event={event} onDelete={handleDelete} />
-          ))}
-        </div>
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Events</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalEvents}</div>
+            <p className="text-xs text-muted-foreground">
+              All your hosted events
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{upcomingEvents}</div>
+            <p className="text-xs text-muted-foreground">
+              Events scheduled
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Participants</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalParticipants}</div>
+            <p className="text-xs text-muted-foreground">
+              Across all events
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">
+              Your share (90%)
+            </p>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* My Events Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>My Events</CardTitle>
+          <CardDescription>
+            View and manage all your hosted events
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Suspense fallback={<TableSkeleton columns={7} rows={10} />}>
+            <MyEventsHost 
+              initialEvents={events} 
+              initialMeta={meta}
+            />
+          </Suspense>
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
+
+export default HostDashboardPage;

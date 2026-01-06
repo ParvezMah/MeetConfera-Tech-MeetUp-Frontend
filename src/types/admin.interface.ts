@@ -3,12 +3,15 @@ export interface IAdmin {
   name: string;
   email: string;
   contactNumber: string;
-  profilePhoto?: string | null;
+  profilePhoto?: string | File;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
-  user?: {
-    role?: string;
+  user: {
+    id: string;
+    role: string;
+    email: string;
+    status: string;
   };
 }
 

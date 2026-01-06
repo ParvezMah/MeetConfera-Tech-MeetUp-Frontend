@@ -4,11 +4,11 @@ export interface IParticipant {
   eventId: string;
   joinedAt: string;
   status: "JOINED" | "CANCELLED" | "REJECTED" | "WAITING";
-  user?: {
+  user: {
     id: string;
     name: string;
     email: string;
-    profilePhoto?: string;
+    profilePhoto?: string | File;
     contactNumber?: string;
     location?: string
   };

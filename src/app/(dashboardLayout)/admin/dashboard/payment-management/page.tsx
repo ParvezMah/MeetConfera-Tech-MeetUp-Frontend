@@ -1,5 +1,4 @@
 import { getPayments } from "@/services/admin/payment.service";
-import PaymentHistoryClient from "@/components/modules/admin/PaymentHistoryClient";
 
 interface PageProps {
     search: {
@@ -17,11 +16,14 @@ const PaymentHistoryPage = async ({ search }: PageProps) => {
     const meta = result.meta || { page: 1, limit: 12, total: payments.length };
 
     return (
-        <PaymentHistoryClient
-            payments={payments}
-            meta={meta}
+        <div>
+            <h1>Payment History Client Page</h1>
+        </div>
+        // <PaymentHistoryClient
+        //     payments={payments}
+        //     meta={meta}
             // statusFilter={status || "all"}
-        />
+        // />
     );
 };
 

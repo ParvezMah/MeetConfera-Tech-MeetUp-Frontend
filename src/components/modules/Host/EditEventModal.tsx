@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { createEvent } from '@/services/host/hostService';
+import { updateEvent } from '@/services/host/hostService';
 import {
     Dialog,
     DialogContent,
@@ -24,48 +24,110 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
+import { IEvent } from '@/types/event.interface';
 
-// Helper to get local datetime string for <input type="datetime-local">
-const getLocalDateTimeNow = (): string => {
-  const now = new Date();
-  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-  return local.toISOString().slice(0, 16);
-};
+
+interface EditEventModalProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    event: IEvent | null;
+}
 
 // Event categories matching backend enum
 const eventCategories = [
-    { label: 'AI', value: 'AI' },
+    { label: 'Music', value: 'MUSIC' },
     { label: 'Movie', value: 'MOVIE' },
     { label: 'Theater', value: 'THEATER' },
     { label: 'Comedy', value: 'COMEDY' },
     { label: 'Party', value: 'PARTY' },
+    { label: 'Nightlife', value: 'NIGHTLIFE' },
+    { label: 'Concert', value: 'CONCERT' },
+    { label: 'Festival', value: 'FESTIVAL' },
+    { label: 'Sports', value: 'SPORTS' },
+    { label: 'Hiking', value: 'HIKING' },
+    { label: 'Cycling', value: 'CYCLING' },
+    { label: 'Running', value: 'RUNNING' },
+    { label: 'Fitness', value: 'FITNESS' },
+    { label: 'Camping', value: 'CAMPING' },
+    { label: 'Outdoor', value: 'OUTDOOR' },
+    { label: 'Adventure', value: 'ADVENTURE' },
+    { label: 'Social', value: 'SOCIAL' },
+    { label: 'Networking', value: 'NETWORKING' },
+    { label: 'Meetup', value: 'MEETUP' },
+    { label: 'Community', value: 'COMMUNITY' },
+    { label: 'Volunteering', value: 'VOLUNTEERING' },
+    { label: 'Culture', value: 'CULTURE' },
+    { label: 'Religion', value: 'RELIGION' },
+    { label: 'Food', value: 'FOOD' },
+    { label: 'Dinner', value: 'DINNER' },
+    { label: 'Cooking', value: 'COOKING' },
+    { label: 'Tasting', value: 'TASTING' },
+    { label: 'Cafe', value: 'CAFE' },
+    { label: 'Restaurant', value: 'RESTAURANT' },
+    { label: 'Tech', value: 'TECH' },
+    { label: 'Workshop', value: 'WORKSHOP' },
+    { label: 'Seminar', value: 'SEMINAR' },
+    { label: 'Conference', value: 'CONFERENCE' },
+    { label: 'Education', value: 'EDUCATION' },
+    { label: 'Language', value: 'LANGUAGE' },
+    { label: 'Business', value: 'BUSINESS' },
+    { label: 'Finance', value: 'FINANCE' },
+    { label: 'Art', value: 'ART' },
+    { label: 'Craft', value: 'CRAFT' },
+    { label: 'Photography', value: 'PHOTOGRAPHY' },
+    { label: 'Painting', value: 'PAINTING' },
+    { label: 'Writing', value: 'WRITING' },
+    { label: 'Dance', value: 'DANCE' },
+    { label: 'Gaming', value: 'GAMING' },
+    { label: 'Esports', value: 'ESPORTS' },
+    { label: 'Board Game', value: 'BOARDGAME' },
+    { label: 'Card Game', value: 'CARDGAME' },
+    { label: 'Online Event', value: 'ONLINE_EVENT' },
+    { label: 'Travel', value: 'TRAVEL' },
+    { label: 'Tour', value: 'TOUR' },
+    { label: 'Road Trip', value: 'ROADTRIP' },
     { label: 'Other', value: 'OTHER' },
 ];
 
-interface CreateEventModalProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    // hostId: string; // <-- Pass the hostId as a prop
-}
-
-const CreateEventModal = ({ open, onOpenChange }: CreateEventModalProps) => {
+const EditEventModal = ({ open, onOpenChange, event }: EditEventModalProps) => {
     const router = useRouter();
     const [isPending, setIsPending] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [formData, setFormData] = useState({
-        eventName: '',
+        title: '',
         category: '',
         description: '',
-        date: getLocalDateTimeNow(),
+        date: '',
         location: '',
         joiningFee: '',
-        maxParticipants: '',
-        minParticipants: '',
-        image: preview as string,
+        capacity: '',
     });
+
+    // Initialize form when event changes
+    useEffect(() => {
+        if (event && open) {
+            const eventDate = new Date(event.date);
+            const localDateTime = new Date(eventDate.getTime() - eventDate.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            
+            setFormData({
+                title: event.eventName || '',
+                category: event.category || '',
+                description: event.description || '',
+                date: localDateTime,
+                location: event.location || '',
+                joiningFee: event.joiningFee?.toString() || '',
+                capacity: event.maxParticipants?.toString() || '',
+            });
+            setPreview(event.image && event.image.trim() !== '' ? event.image : null);
+            setSelectedFile(null);
+        }
+    }, [event, open]);
 
     // Handle file selection and preview
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,73 +135,57 @@ const CreateEventModal = ({ open, onOpenChange }: CreateEventModalProps) => {
         if (file) {
             setSelectedFile(file);
             const reader = new FileReader();
-            reader.onloadend = () => setPreview(reader.result as string);
+            reader.onloadend = () => {
+                setPreview(reader.result as string);
+            };
             reader.readAsDataURL(file);
         }
     };
 
+    // Remove selected file
     const handleRemoveFile = () => {
         setSelectedFile(null);
-        setPreview(null);
+        if (event?.image && event.image.trim() !== '') {
+            setPreview(event.image);
+        } else {
+            setPreview(null);
+        }
     };
 
+    // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!event) return;
+
         setIsPending(true);
-
         try {
-            // if (!hostId) {
-            //     toast.error('Host not found. Please login again.');
-            //     setIsPending(false);
-            //     return;
-            // }
-
-            if (new Date(formData.date) <= new Date()) {
-                toast.error("Please select a future date");
-                setIsPending(false);
-                return;
-            }
-
-            const payload = {
-                // hostId, // ✅ Required by backend
-                eventName: formData.eventName,
+            const data = {
+                title: formData.title,
                 category: formData.category,
                 description: formData.description,
+                // Convert local datetime to ISO UTC to keep exact selection across timezones
                 date: new Date(formData.date).toISOString(),
                 location: formData.location,
                 joiningFee: Number(formData.joiningFee),
-                maxParticipants: Number(formData.maxParticipants),
-                minParticipants: Number(formData.minParticipants),
-                image: formData.image,
+                capacity: Number(formData.capacity),
             };
-
-            const result = await createEvent(payload, selectedFile || undefined);
+if (new Date(formData.date) <= new Date()) {
+  toast.error("Please select a future date");
+  setIsPending(false);
+  return;
+}
+            const result = await updateEvent(event.id, data, selectedFile || undefined);
 
             if (result.success) {
-                toast.success('Event created successfully!');
+                toast.success('Event updated successfully!');
                 onOpenChange(false);
-                setTimeout(() => router.refresh(), 1000);
-
-                // Reset form
-                setPreview(null);
-                setSelectedFile(null);
-                setFormData({
-                    eventName: '',
-                    category: '',
-                    description: '',
-                    date: getLocalDateTimeNow(),
-                    location: '',
-                    joiningFee: '',
-                    maxParticipants: '',
-                    minParticipants: '',
-                    image: preview as string,
-                });
+                router.refresh();
             } else {
-                toast.error(result.message || 'Failed to create event');
+                toast.error(result.message || 'Failed to update event');
             }
         } catch (error: any) {
+            toast.error('An error occurred while updating the event');
             console.error(error);
-            toast.error('An error occurred while creating the event');
         } finally {
             setIsPending(false);
         }
@@ -150,60 +196,49 @@ const CreateEventModal = ({ open, onOpenChange }: CreateEventModalProps) => {
         if (!open) {
             setPreview(null);
             setSelectedFile(null);
-            setFormData({
-                eventName: '',
-                category: '',
-                description: '',
-                date: getLocalDateTimeNow(),
-                location: '',
-                joiningFee: '',
-                maxParticipants: '',
-                minParticipants: '',
-                image: preview as string,
-            });
         }
     }, [open]);
+
+    if (!event) return null;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Create New Event</DialogTitle>
+                    <DialogTitle>Edit Event</DialogTitle>
                     <DialogDescription>
-                        Fill in the details to create a new event. All fields are required.
+                        Update the event details. All fields are optional.
                     </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <FieldGroup>
-                        {/* Event Name */}
+                        {/* Title */}
                         <Field>
-                            <FieldLabel htmlFor="eventName">Event Name *</FieldLabel>
+                            <FieldLabel htmlFor="edit-title">Event Title</FieldLabel>
                             <Input
-                                id="eventName"
+                                id="edit-title"
                                 type="text"
                                 placeholder="e.g., Mountain Music Adventure"
-                                value={formData.eventName}
-                                onChange={(e) => setFormData({ ...formData, eventName: e.target.value })}
-                                required
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                 disabled={isPending}
                             />
                         </Field>
 
                         {/* Category */}
                         <Field>
-                            <FieldLabel htmlFor="category">Category *</FieldLabel>
+                            <FieldLabel htmlFor="edit-category">Category</FieldLabel>
                             <Select
                                 value={formData.category}
                                 onValueChange={(value) => setFormData({ ...formData, category: value })}
-                                required
                                 disabled={isPending}
                             >
-                                <SelectTrigger id="category">
+                                <SelectTrigger id="edit-category">
                                     <SelectValue placeholder="Select a category" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {eventCategories.map(cat => (
+                                    {eventCategories.map((cat) => (
                                         <SelectItem key={cat.value} value={cat.value}>
                                             {cat.label}
                                         </SelectItem>
@@ -214,87 +249,68 @@ const CreateEventModal = ({ open, onOpenChange }: CreateEventModalProps) => {
 
                         {/* Description */}
                         <Field>
-                            <FieldLabel htmlFor="description">Description *</FieldLabel>
+                            <FieldLabel htmlFor="edit-description">Description</FieldLabel>
                             <Textarea
-                                id="description"
+                                id="edit-description"
                                 placeholder="Describe your event in detail..."
                                 rows={4}
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                required
                                 disabled={isPending}
                             />
                         </Field>
 
-                        {/* Date & Location */}
+                        {/* Date and Location Row */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <Field>
-                                <FieldLabel htmlFor="date">Event Date *</FieldLabel>
+                                <FieldLabel htmlFor="edit-date">Event Date</FieldLabel>
                                 <Input
-                                    id="date"
+                                    id="edit-date"
                                     type="datetime-local"
                                     value={formData.date}
                                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                    min={getLocalDateTimeNow()}
-                                    required
                                     disabled={isPending}
                                 />
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="location">Location *</FieldLabel>
+                                <FieldLabel htmlFor="edit-location">Location</FieldLabel>
                                 <Input
-                                    id="location"
+                                    id="edit-location"
                                     type="text"
                                     placeholder="e.g., Dhaka Hill Tracts, Bangladesh"
                                     value={formData.location}
                                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                    required
                                     disabled={isPending}
                                 />
                             </Field>
                         </div>
 
-                        {/* Joining Fee & Max Participants */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Joining Fee and Capacity Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <Field>
-                                <FieldLabel htmlFor="joiningFee">Joining Fee ($) *</FieldLabel>
+                                <FieldLabel htmlFor="edit-joiningFee">Joining Fee ($)</FieldLabel>
                                 <Input
-                                    id="joiningFee"
+                                    id="edit-joiningFee"
                                     type="number"
                                     min="0"
                                     step="0.01"
                                     placeholder="0.00"
                                     value={formData.joiningFee}
                                     onChange={(e) => setFormData({ ...formData, joiningFee: e.target.value })}
-                                    required
                                     disabled={isPending}
                                 />
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="maxParticipants">Max Participants *</FieldLabel>
+                                <FieldLabel htmlFor="edit-capacity">Capacity</FieldLabel>
                                 <Input
-                                    id="maxParticipants"
+                                    id="edit-capacity"
                                     type="number"
                                     min="1"
                                     placeholder="e.g., 20"
-                                    value={formData.maxParticipants}
-                                    onChange={(e) => setFormData({ ...formData, maxParticipants: e.target.value })}
-                                    required
-                                    disabled={isPending}
-                                />
-                            </Field>
-                            <Field>
-                                <FieldLabel htmlFor="minParticipants">Min Participants *</FieldLabel>
-                                <Input
-                                    id="minParticipants"
-                                    type="number"
-                                    min="1"
-                                    placeholder="e.g., 20"
-                                    value={formData.minParticipants}
-                                    onChange={(e) => setFormData({ ...formData, minParticipants: e.target.value })}
-                                    required
+                                    value={formData.capacity}
+                                    onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
                                     disabled={isPending}
                                 />
                             </Field>
@@ -302,7 +318,7 @@ const CreateEventModal = ({ open, onOpenChange }: CreateEventModalProps) => {
 
                         {/* Image Upload */}
                         <Field>
-                            <FieldLabel htmlFor="file">Event Image</FieldLabel>
+                            <FieldLabel htmlFor="edit-file">Event Image</FieldLabel>
                             <div className="space-y-4">
                                 {preview ? (
                                     <div className="relative w-full h-48 rounded-lg overflow-hidden border">
@@ -325,7 +341,7 @@ const CreateEventModal = ({ open, onOpenChange }: CreateEventModalProps) => {
                                     </div>
                                 ) : (
                                     <label
-                                        htmlFor="file"
+                                        htmlFor="edit-file"
                                         className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted transition-colors"
                                     >
                                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -338,7 +354,7 @@ const CreateEventModal = ({ open, onOpenChange }: CreateEventModalProps) => {
                                             </p>
                                         </div>
                                         <input
-                                            id="file"
+                                            id="edit-file"
                                             type="file"
                                             accept="image/*"
                                             className="hidden"
@@ -361,7 +377,7 @@ const CreateEventModal = ({ open, onOpenChange }: CreateEventModalProps) => {
                             Cancel
                         </Button>
                         <Button type="submit" disabled={isPending}>
-                            {isPending ? 'Creating...' : 'Create Event'}
+                            {isPending ? 'Updating...' : 'Update Event'}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -370,4 +386,5 @@ const CreateEventModal = ({ open, onOpenChange }: CreateEventModalProps) => {
     );
 };
 
-export default CreateEventModal;
+export default EditEventModal;
+

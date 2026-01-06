@@ -27,7 +27,7 @@ export const HostColumns: Column<IHost>[] = [
       const specialties: any = host.interests;
 
       if (!specialties || specialties.length === 0) {
-        return <span className="text-xs text-gray-500">No specialties</span>;
+        return <span className="text-xs"><p className="bg-red-500">Interest is not loading</p></span>;
       }
 
       return (
@@ -63,7 +63,8 @@ export const HostColumns: Column<IHost>[] = [
     header: "Location",
     accessor: (host) => (
       <span className="text-sm font-medium">
-        {host.location}
+        {host.location} 
+        <p className="bg-red-500">Location is not loading</p>
       </span>
     ),
     sortKey: "experience",
@@ -71,8 +72,8 @@ export const HostColumns: Column<IHost>[] = [
   {
     header: "Joining Fee",
     accessor: (host) => (
-      <span className="text-sm font-semibold text-green-600">
-        ${host.joiningFee}
+      <span className="text-sm font-semibold flex">
+        ${host.joiningFee} <p className="bg-red-500">Joinig Fee is not loading</p>
       </span>
     ),
     sortKey: "joiningFee",

@@ -51,7 +51,7 @@ const PublicNavbar = async () => {
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline">
-                {" "}
+                {""}
                 <Menu />{" "}
               </Button>
             </SheetTrigger>

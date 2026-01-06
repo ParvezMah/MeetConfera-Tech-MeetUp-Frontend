@@ -29,7 +29,6 @@ export const updateHostZodSchema = z.object({
     address: z.string().min(1, "Address is required").optional(),
     bio: z.string().optional(),
     location: z.string().optional(),
-    interests: z.string().optional(),
     profilePhoto: z.any().optional(),
 });
 

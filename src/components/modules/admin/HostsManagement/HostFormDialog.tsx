@@ -8,32 +8,37 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
 import { useEventCategorySelection } from "@/hooks/eventCategoryHook/useEventCategorySelection";
-
+import { createEvent, updateEvent } from "@/services/admin/eventManagement";
+import { createHost, updateHost } from "@/services/admin/hostsManagement";
 import { EventCategory, IEvent } from "@/types/event.interface";
+import { IHost } from "@/types/host.interface";
 import Image from "next/image";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import EventCategoryMultiSelect from "./EventCategoryMultiSelect";
-import { createEvent, updateEvent } from "@/services/admin/eventManagement";
 
 interface IHostFormDialogProps {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  event?: IEvent;
+  host?: IHost;
 }
 
 const HostFormDialog = ({
   open,
   onClose,
   onSuccess,
-  event,
+  host,
 }: IHostFormDialogProps) => {
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isEdit = !!event;
+  const isEditHost = !!host;
+
+  const [state, formAction, pending] = useActionState(
+    isEdit ? updateHost.bind(null, host?.id as string) : createHost,
+    null
+  );
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -42,43 +47,12 @@ const HostFormDialog = ({
     setSelectedFile(file || null);
   };
 
-  const [state, formAction, pending] = useActionState(
-    isEdit ? updateEvent.bind(null, event.id!) : createEvent,
-    null
-  );
-
-  const handleClose = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    if (selectedFile) {
-      setSelectedFile(null); // Clear preview
-    }
-    formRef.current?.reset(); // Clear form
-    onClose(); // Close dialog
-  };
-
-  // Get all event categories as array of strings
-  const allEventCategories = Object.values(EventCategory);
-
-  const eventCategorySelection = useEventCategorySelection({
-    event,
-    isEdit,
-    open,
-  });
-
-  const getCategoryTitle = (id: string): string => {
-    return id.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    ).join(' ');
-  };
-
   useEffect(() => {
     if (state?.success) {
-      toast.success(state.message);
+      toast.success(state.message || "Operation successful"); // Eikhan theke error ta astece repeated toasdt (Admin created successfully)
       if (formRef.current) {
         formRef.current.reset();
-      };
+      }
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedFile(null);
       onSuccess();
@@ -94,11 +68,25 @@ const HostFormDialog = ({
     }
   }, [state, onSuccess, onClose, selectedFile]);
 
+  const handleClose = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (selectedFile) {
+      setSelectedFile(null); // Clear preview
+    }
+    formRef.current?.reset(); // Clear form
+    onClose(); // Close dialog
+  };
+
+
+
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-h-[90vh] flex flex-col p-0">
         <DialogHeader className="px-6 pt-6 pb-4">
-          <DialogTitle>{isEdit ? "Edit Event" : "Add New Event"}</DialogTitle>
+          <DialogTitle>{isEditHost ? "Edit Host" : "Add New Host"}</DialogTitle>
         </DialogHeader>
 
         <form
@@ -108,57 +96,42 @@ const HostFormDialog = ({
         >          
           <div className="flex-1 overflow-y-auto px-6 space-y-4 pb-4">
             <Field>
-              <FieldLabel htmlFor="eventName">Event Name</FieldLabel>
+              <FieldLabel htmlFor="name">Name</FieldLabel>
               <Input
-                id="eventName"
-                name="eventName"
+                id="name"
+                name="name"
                 placeholder="Tech Conference 2024"
                 defaultValue={
-                  state?.formData?.eventName || (isEdit ? event?.eventName : "")
+                  state?.formData?.host?.name || (isEdit ? host?.name : "")
                 }
               />
               <InputFieldError state={state} field="eventName" />
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="description">Description</FieldLabel>
+              <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
-                id="description"
-                name="description"
-                placeholder="A brief description of the event"
-                defaultValue={
-                  state?.formData?.description || (isEdit ? event?.description : "")
-                }
+                id="email"
+                name="email"
+                type="email"
+                placeholder="admin@example.com"
+                defaultValue={state?.formData?.email || host?.email || ""}
+                disabled={isEdit}
               />
-              <InputFieldError state={state} field="description" />
+              <InputFieldError field="email" state={state} />
             </Field>
 
-            {/* Event Category Selection - Exactly like SpecialtyMultiSelect */}
-            <EventCategoryMultiSelect
-              selectedCategoryIds={eventCategorySelection.selectedCategoryIds}
-              removedCategoryIds={eventCategorySelection.removedCategoryIds}
-              currentCategoryId={eventCategorySelection.currentCategoryId}
-              availableCategories={eventCategorySelection.getAvailableCategories(allEventCategories)}
-              isEdit={isEdit}
-              onCurrentCategoryChange={eventCategorySelection.setCurrentCategoryId}
-              onAddCategory={eventCategorySelection.handleAddCategory}
-              onRemoveCategory={eventCategorySelection.handleRemoveCategory}
-              getCategoryTitle={getCategoryTitle}
-              getNewCategories={eventCategorySelection.getNewCategories}
-            />
-
             <Field>
-              <FieldLabel htmlFor="date">Event Date & Time</FieldLabel>
+              <FieldLabel htmlFor="contactNumber">Contact Number</FieldLabel>
               <Input
-                id="date"
-                name="date"
-                type="datetime-local"
+                id="contactNumber"
+                name="contactNumber"
+                placeholder="A brief contactNumber of the event"
                 defaultValue={
-                  state?.formData?.date || 
-                  (isEdit && event?.date ? new Date(event.date).toISOString().slice(0, 16) : "")
+                  state?.formData?.contactNumber || (isEdit ? host?.contactNumber : "")
                 }
               />
-              <InputFieldError state={state} field="date" />
+              <InputFieldError state={state} field="contactNumber" />
             </Field>
 
             <Field>
@@ -168,67 +141,15 @@ const HostFormDialog = ({
                 name="location"
                 placeholder="123 Main St, City, Country"
                 defaultValue={
-                  state?.formData?.location || (isEdit ? event?.location : "")
+                  state?.formData?.location || (isEditHost ? host?.location : "")
                 }
               />
               <InputFieldError state={state} field="location" />
             </Field>
 
-            <Field>
-              <FieldLabel htmlFor="maxParticipants">Max Participants</FieldLabel>
-              <Input
-                id="maxParticipants"
-                name="maxParticipants"
-                type="number"
-                placeholder="100"
-                defaultValue={
-                  state?.formData?.maxParticipants ||
-                  (isEdit ? event?.maxParticipants : "")
-                }
-                min="1"
-              />
-              <InputFieldError state={state} field="maxParticipants" />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="minParticipants">Min Participants</FieldLabel>
-              <Input
-                id="minParticipants"
-                name="minParticipants"
-                type="number"
-                placeholder="10"
-                defaultValue={
-                  state?.formData?.minParticipants ||
-                  (isEdit ? event?.minParticipants : "")
-                }
-                min="1"
-              />
-              <InputFieldError state={state} field="minParticipants" />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="joiningFee">Joining Fee (Optional)</FieldLabel>
-              <Input
-                id="joiningFee"
-                name="joiningFee"
-                type="number"
-                placeholder="50"
-                defaultValue={isEdit ? event?.joiningFee : undefined}
-                min="0"
-              />
-              <InputFieldError state={state} field="joiningFee" />
-            </Field>
-
-            {/* Hidden input for hostId - you might want to get this from context or props */}
-            <Input
-              type="hidden"
-              name="hostId"
-              value={event?.hostId || ""} // You need to provide this
-            />
-
             {!isEdit && (
               <Field>
-                <FieldLabel htmlFor="file">Event Image</FieldLabel>
+                <FieldLabel htmlFor="file">Host Image</FieldLabel>
                   {selectedFile && (
                     <Image
                       src={
@@ -270,9 +191,9 @@ const HostFormDialog = ({
             <Button type="submit" disabled={pending}>
               {pending
                 ? "Saving..."
-                : isEdit
-                ? "Update Event"
-                : "Create Event"}
+                : isEditHost
+                ? "Update Host"
+                : "Create Host"}
             </Button>
           </div>
         </form>

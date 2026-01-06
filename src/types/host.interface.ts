@@ -20,7 +20,7 @@ export interface IHost {
   verificationNotes?: string;
   createdAt?: string;
   updatedAt?: string;
-  user?: {
+  user: {
     id: string;
     email: string;
     role: string;

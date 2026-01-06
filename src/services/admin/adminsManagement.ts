@@ -5,10 +5,6 @@ import { serverFetch } from "@/lib/server-fetch";
 import { zodValidator } from "@/lib/zodValidator";
 import { createAdminZodSchema, updateAdminZodSchema } from "@/zod/admin.validation";
 
-/**
- * CREATE ADMIN
- * API: POST /user/create-admin
- */
 export async function createAdmin(_prevState: any, formData: FormData) {
     // Build validation payload
     const validationPayload = {
@@ -68,10 +64,7 @@ export async function createAdmin(_prevState: any, formData: FormData) {
     }
 }
 
-/**
- * GET ALL ADMINS
- * API: GET /admin?queryParams
- */
+
 export async function getAdmins(queryString?: string) {
     try {
         const response = await serverFetch.get(`/admins${queryString ? `?${queryString}` : ""}`);
@@ -87,10 +80,7 @@ export async function getAdmins(queryString?: string) {
     }
 }
 
-/**
- * GET ADMIN BY ID
- * API: GET /admin/:id
- */
+
 export async function getAdminById(id: string) {
     try {
         const response = await serverFetch.get(`/admin/${id}`)
@@ -105,32 +95,11 @@ export async function getAdminById(id: string) {
     }
 }
 
-/**
- * UPDATE ADMIN
- * API: PATCH /admin/:id
- */
 export async function updateAdmin(id: string, _prevState: any, formData: FormData) {
     const validationPayload: any = {
         name: formData.get("name") as string,
         contactNumber: formData.get("contactNumber") as string,
     };
-
-    /*
-    // Server-side validation
-        const validation = updateAdminZodSchema.safeParse(validationPayload);
-        if (!validation.success) {
-            const errors = validation.error.issues.map((err: any) => ({
-                field: err.path[0] as string,
-                message: err.message,
-            }));
-            return {
-                success: false,
-                message: "Validation failed",
-                formData: validationPayload,
-                errors,
-            };
-        }
-    */
 
     const validation = zodValidator(validationPayload, updateAdminZodSchema);
     if (!validation.success && validation.errors) {
@@ -150,7 +119,7 @@ export async function updateAdmin(id: string, _prevState: any, formData: FormDat
     }
 
     try {
-        const response = await serverFetch.patch(`/admin/${id}`, {
+        const response = await serverFetch.patch(`/admins/${id}`, {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(validation.data),
         });
@@ -167,13 +136,9 @@ export async function updateAdmin(id: string, _prevState: any, formData: FormDat
     }
 }
 
-/**
- * SOFT DELETE ADMIN
- * API: DELETE /admin/soft/:id
- */
 export async function softDeleteAdmin(id: string) {
     try {
-        const response = await serverFetch.delete(`/admin/soft/${id}`)
+        const response = await serverFetch.delete(`/admins/soft-delete/${id}`)
         const result = await response.json();
         return result;
     } catch (error: any) {
@@ -185,13 +150,10 @@ export async function softDeleteAdmin(id: string) {
     }
 }
 
-/**
- * HARD DELETE ADMIN
- * API: DELETE /admin/:id
- */
 export async function deleteAdmin(id: string) {
+    console.log("deleteAdmin id : ", deleteAdmin)
     try {
-        const response = await serverFetch.delete(`/admin/${id}`)
+        const response = await serverFetch.delete(`/admins/${id}`)
         const result = await response.json();
         return result;
     } catch (error: any) {

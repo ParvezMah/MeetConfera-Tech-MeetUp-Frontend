@@ -1,7 +1,7 @@
 "use client";
 import DeleteConfirmationDialog from "@/components/shared/DeleteConfirmationDialog";
 import ManagementTable from "@/components/shared/ManagementTable";
-import { IEvent } from "@/types/event.interface";
+import { getHosts, softDeleteHost } from "@/services/admin/hostsManagement";
 import { IHost } from "@/types/host.interface";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -9,19 +9,17 @@ import { toast } from "sonner";
 import { HostColumns } from "./HostColumns";
 import HostFormDialog from "./HostFormDialog";
 import HostViewDetailDialog from "./HostViewDetailDialog";
-import { softDeleteHost } from "@/services/admin/hostsManagement";
 
 interface HostTableProps {
-  doctors: IHost[];
-  specialities: IEvent[];
+  hosts: IHost[];
 }
 
-const HostTable = ({ doctors, specialities }: HostTableProps) => {
+const HostTable = ({ hosts }: HostTableProps) => {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [deletingHost, setDeletingHost] = useState<IHost | null>(null);
   const [viewingHost, setViewingHost] = useState<IHost | null>(null); //
-  const [editingDoctor, setEditingDoctor] = useState<IHost | null>(null); // now created
+  const [editingHost, setEditingHost] = useState<IHost | null>(null); // now created
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleRefresh = () => {
@@ -31,17 +29,17 @@ const HostTable = ({ doctors, specialities }: HostTableProps) => {
   };
 
   // now created
-  const handleView = (doctor: IHost) => {
-    setViewingHost(doctor);
+  const handleView = (hosts: IHost) => {
+    setViewingHost(hosts);
   };
 
   // now created
-  const handleEdit = (doctor: IHost) => {
-    setEditingDoctor(doctor);
+  const handleEdit = (hosts: IHost) => {
+    setEditingHost(hosts);
   };
 
-  const handleDelete = (doctor: IHost) => {
-    setDeletingHost(doctor);
+  const handleDelete = (hosts: IHost) => {
+    setDeletingHost(hosts);
   };
 
   const confirmDelete = async () => {
@@ -52,37 +50,38 @@ const HostTable = ({ doctors, specialities }: HostTableProps) => {
     setIsDeleting(false);
 
     if (result.success) {
-      toast.success(result.message || "Doctor deleted successfully");
+      toast.success(result.message || "Host deleted successfully");
       setDeletingHost(null);
       handleRefresh();
     } else {
-      toast.error(result.message || "Failed to delete doctor");
+      toast.error(result.message || "Failed to delete Host");
     }
   };
 
   return (
     <>
       <ManagementTable
-        data={doctors}
+        data={hosts}
         columns={HostColumns}
         onView={handleView} // now created
         onEdit={handleEdit} // now created
         onDelete={handleDelete}
-        getRowKey={(doctor) => doctor.id!}
-        emptyMessage="No doctors found"
+        getRowKey={(hosts) => hosts.id!}
+        emptyMessage="No Hosts found"
       />
       {/* now created this */}
-      {/* Edit Doctor Form Dialog */}
+      {/* Edit Host Form Dialog */}
       <HostFormDialog
-        open={!!editingDoctor}
-        onClose={() => setEditingDoctor(null)}
+        open={!!editingHost}
+        onClose={() => setEditingHost(null)}
+        host={editingHost!}
         onSuccess={() => {
-          setEditingDoctor(null);
+          setEditingHost(null);
           handleRefresh();
         }}
       />
 
-      {/* View Doctor Detail Dialog */}
+      {/* View Host Detail Dialog */}
       <HostViewDetailDialog
         open={!!viewingHost}
         onClose={() => setViewingHost(null)}
@@ -94,7 +93,7 @@ const HostTable = ({ doctors, specialities }: HostTableProps) => {
         open={!!deletingHost}
         onOpenChange={(open) => !open && setDeletingHost(null)}
         onConfirm={confirmDelete}
-        title="Delete Doctor"
+        title="Delete Host"
         description={`Are you sure you want to delete ${deletingHost?.name}? This action cannot be undone.`}
         isDeleting={isDeleting}
       />

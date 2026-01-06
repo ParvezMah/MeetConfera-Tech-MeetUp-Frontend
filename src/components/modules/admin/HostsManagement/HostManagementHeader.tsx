@@ -1,30 +1,25 @@
 "use client";
 
 import ManagementPageHeader from "@/components/shared/ManagementPageHeader";
-import { ISpecialty } from "@/types/specialities.interface";
-import { Plus } from "lucide-react";
+import { IEvent } from "@/types/event.interface";
+import { IHost } from "@/types/host.interface";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
-import DoctorFormDialog from "./HostFormDialog";
+import HostFormDialog from "./HostFormDialog";
 
 interface HostManagementHeaderProps {
-  specialities?: ISpecialty[];
+  event?: IEvent;
+  host?: IHost;
 }
 
 const HostManagementHeader = ({
-  specialities,
+  event,
+  host
 }: HostManagementHeaderProps) => {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // const handleSuccess = () => {
-  //   startTransition(() => {
-  //     router.refresh();
-  //   });
-  // };
-
-  // Wrap in useCallback to prevent infinite loop
   const handleSuccess = useCallback(() => {
     startTransition(() => {
       router.refresh();
@@ -38,32 +33,30 @@ const HostManagementHeader = ({
     setIsDialogOpen(true);
   };
 
-  // const handleCloseDialog = () => {
-  //   setIsDialogOpen(false);
-  // };
-
   const handleCloseDialog = useCallback(() => {
     setIsDialogOpen(false);
   }, []);
 
+
   return (
     <>
-      <DoctorFormDialog
+      <HostFormDialog
         key={dialogKey}
         open={isDialogOpen}
         onClose={handleCloseDialog}
         onSuccess={handleSuccess}
-        specialities={specialities}
+        event={event}
+        host={host}
       />
 
       <ManagementPageHeader
-        title="Doctors Management"
-        description="Manage Doctors information and details"
-        action={{
-          label: "Add Doctor",
-          icon: Plus,
-          onClick: handleOpenDialog,
-        }}
+        title="Hosts Management"
+        description="Manage Hosts information and details"
+        // action={{
+        //   label: "Add Host",
+        //   icon: Plus,
+        //   onClick: handleOpenDialog,
+        // }}
       />
     </>
   );

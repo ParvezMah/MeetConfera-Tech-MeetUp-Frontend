@@ -24,10 +24,13 @@ const MyProfile = ({ userInfo }: MyProfileProps) => {
 
   const getProfilePhoto = () => {
     if (userInfo.role === "ADMIN") {
-      return userInfo.admin?.user?.profilePhoto;
+      console.log("Admin Profile Photo:", userInfo.admin?.profilePhoto);
+      return userInfo.admin?.profilePhoto;
     } else if (userInfo.role === "HOST") {
-      return userInfo.host?.user?.profilePhoto;
+      console.log("Host Profile Photo:", userInfo.host?.profilePhoto);
+      return userInfo.host?.profilePhoto;
     } else if (userInfo.role === "USER") {
+      console.log("Participant Profile Photo:", userInfo.participant?.user?.profilePhoto);
       return userInfo.participant?.user?.profilePhoto;
     }
     return null;
@@ -45,6 +48,7 @@ const MyProfile = ({ userInfo }: MyProfileProps) => {
   };
 
   const profilePhoto = getProfilePhoto();
+  console.log("Profile Photo:", profilePhoto);
   const profileData = getProfileData();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -217,17 +221,6 @@ const MyProfile = ({ userInfo }: MyProfileProps) => {
                       />
                     </div>
 
-                    {/* <div className="space-y-2">
-                      <Label htmlFor="experience">Experience (Years)</Label>
-                      <Input
-                        id="experience"
-                        name="experience"
-                        type="number"
-                        defaultValue={userInfo.host.experience || ""}
-                        disabled={isPending}
-                      />
-                    </div> */}
-
                     <div className="space-y-2">
                       <Label htmlFor="joiningFee">Joining Fee</Label>
                       <Input
@@ -239,17 +232,6 @@ const MyProfile = ({ userInfo }: MyProfileProps) => {
                         disabled={isPending}
                       />
                     </div>
-
-                    {/* <div className="space-y-2">
-                      <Label htmlFor="qualification">Qualification</Label>
-                      <Input
-                        id="qualification"
-                        name="qualification"
-                        defaultValue={userInfo.host.qualification || ""}
-                        required
-                        disabled={isPending}
-                      />
-                    </div> */}
 
                     <div className="space-y-2">
                       <Label htmlFor="organization">
@@ -274,20 +256,6 @@ const MyProfile = ({ userInfo }: MyProfileProps) => {
                         disabled={isPending}
                       />
                     </div>
-
-                    {/* <div className="space-y-2">
-                      <Label htmlFor="gender">Gender</Label>
-                      <select
-                        id="gender"
-                        name="gender"
-                        defaultValue={userInfo.host.gender || "MALE"}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        disabled={isPending}
-                      >
-                        <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
-                      </select>
-                    </div> */}
                   </>
                 )}
 

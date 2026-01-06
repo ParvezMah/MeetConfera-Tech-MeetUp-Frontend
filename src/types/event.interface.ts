@@ -4,7 +4,7 @@ export enum EventStatus {
   OPEN = "OPEN",
   FULLED = "FULLED",
   CANCELED = "CANCELED",
-  COMPLETED = "COMPLETED"
+  COMPLETED = "COMPLETED",
 }
 
 export enum EventCategory {
@@ -22,7 +22,7 @@ export enum EventCategory {
   STARTUPS = "STARTUPS",
   IOT = "IOT",
   SOFTWARE_ENGINEERING = "SOFTWARE_ENGINEERING",
-  OTHER = "OTHER"
+  OTHER = "OTHER",
 }
 
 export interface IEvent {
@@ -32,48 +32,57 @@ export interface IEvent {
   date: string; // ISO string format
   maxParticipants: number;
   minParticipants: number;
-  status: EventStatus;
+  status: string;
   image?: string;
   hostId: string;
   createdAt: string;
   updatedAt: string;
-  joiningFee?: number;
+  joiningFee: number;
   location?: string;
   category: EventCategory;
-  
-  // Optional relations
-  // host?: {
-  //   id: string;
-  //   name: string;
-  //   email: string;
-  //   contactNumber?: string;
-  // };
-  
-  // participants?: Array<{
-  //   id: string;
-  //   userId: string;
-  //   status: string;
-  //   user?: {
-  //     name: string;
-  //     email: string;
-  //   };
-  // }>;
-  
-  // payments?: Array<{
-  //   id: string;
-  //   amount: number;
-  //   status: string;
-  //   createdAt: string;
-  // }>;
-  
-  // reviews?: Array<{
-  //   id: string;
-  //   rating: number;
-  //   comment?: string;
-  //   userId: string;
-  //   createdAt: string;
-  // }>;
+  host?: {
+    id: string;
+    name: string;
+    email: string;
+    profilePhoto?: string | null;
+    rating?: number;
+  };
+  participants?: {
+  id: string;
+  userId: string;
+  status: string;
+  user?: {
+    name: string;
+    email: string;
+  };
 }
+}
+
+// Optional relations
+// host?: {
+//   id: string;
+//   name: string;
+//   email: string;
+//   contactNumber?: string;
+// };
+
+
+
+// payments?: Array<{
+//   id: string;
+//   amount: number;
+//   status: string;
+//   createdAt: string;
+// }>;
+
+// reviews?: Array<{
+//   id: string;
+//   rating: number;
+//   comment?: string;
+//   userId: string;
+//   createdAt: string;
+// }>;
+// }
 
 // // For form submission
 // export interface IEventFormData {

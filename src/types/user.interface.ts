@@ -14,7 +14,7 @@ export interface UserInfo {
   id: string;
   name: string;
   email: string;
-  profilePhoto?: string;
+  profilePhoto?: string | File;
   contactNumber: string;
   role: UserRole;
   needPasswordChange: boolean;

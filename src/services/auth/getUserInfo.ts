@@ -6,37 +6,6 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { getCookie } from "./tokenHandlers";
 import { serverFetch } from "@/lib/server-fetch";
 
-// export const getUserInfo = async (): Promise<UserInfo | null> => {
-
-//     try {
-//         const accessToken = await getCookie("accessToken");
-
-//         if (!accessToken) {
-//             return null;
-//         }
-
-//         const verifiedToken = jwt.verify(accessToken, process.env.JWT_SECRET as string) as JwtPayload;
-
-//         if (!verifiedToken) {
-//             return null;
-//         }
-//         console.log("verifiedToken : ", verifiedToken)
-
-//         const userInfo: UserInfo = {
-//             name: verifiedToken.name || "Unknown User",
-//             email: verifiedToken.email,
-//             role: verifiedToken.role,
-//         };
-
-//         return userInfo;
-//     } catch (error: any) {
-//         console.log(error);
-//         return null;
-//     }
-
-// }
-
-
 export const getUserInfo = async (): Promise<UserInfo | any> => {
     let userInfo: UserInfo | any;
     try {
@@ -59,6 +28,7 @@ export const getUserInfo = async (): Promise<UserInfo | any> => {
             const verifiedToken = jwt.verify(accessToken, process.env.JWT_SECRET as string) as JwtPayload;
 
             userInfo = {
+                id: verifiedToken.id,
                 name: verifiedToken.name || "Unknown User",
                 email: verifiedToken.email,
                 role: verifiedToken.role,
@@ -66,7 +36,7 @@ export const getUserInfo = async (): Promise<UserInfo | any> => {
         }
 
         userInfo = {
-            name: result.data.admin?.name || result.data.doctor?.name || result.data.patient?.name || result.data.name || "Unknown User",
+            name: result.data.admin?.name || result.data.host?.name || result.data.user?.name || result.data.name || "Unknown User",
             ...result.data
         };
 
@@ -79,7 +49,7 @@ export const getUserInfo = async (): Promise<UserInfo | any> => {
             id: "",
             name: "Unknown User",
             email: "",
-            role: "PATIENT",
+            role: "USER",
         };
     }
 

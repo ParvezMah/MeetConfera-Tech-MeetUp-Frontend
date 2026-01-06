@@ -1,9 +1,10 @@
-import PendingEventsList from "@/components/modules/admin/PendingEventsList";
+
 
 const AdminEventsManagementsPage = () => {
       return (
         <div className="space-y-6">
-            <PendingEventsList />
+            <h1>Admin Event Management Page</h1>
+            {/* <PendingEventsList /> */}
         </div>
     );
 };

@@ -81,6 +81,38 @@ export async function getAllHosts(filters: IAdminFilters = {}, options: IPaginat
   }
 }
 
+// Participants management
+export async function getAllParticipant(
+  filters: IAdminFilters = {},
+  options: IPaginationOptions = {}
+) {
+  try {
+    const qs = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        qs.set(key, String(value));
+      }
+    });
+
+    Object.entries(options).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        qs.set(key, String(value));
+      }
+    });
+
+    const res = await serverFetch.get(`/participants?${qs.toString()}`);
+    return await res.json();
+  } catch (error: any) {
+    console.error("getAllParticipant error", error?.message || error);
+    return {
+      success: false,
+      message: error?.message || "Failed to fetch participants",
+    };
+  }
+}
+
+
 export async function updateUserStatus(Id: string, status: string) {
   try {
     const res = await serverFetch.patch(`/user/${Id}/status`, { body: JSON.stringify({ status }), headers: { 'Content-Type': 'application/json' } });

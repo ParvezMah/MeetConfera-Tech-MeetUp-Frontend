@@ -16,8 +16,6 @@ interface AdminsTableProps {
 }
 
 const AdminsTable = ({ admins }: AdminsTableProps) => {
-  console.log("admin in adminTable : ", admins)
-  console.log("getAdmins : ", getAdmins)
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [deletingAdmin, setDeletingAdmin] = useState<IAdmin | null>(null);

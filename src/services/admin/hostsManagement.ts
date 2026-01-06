@@ -217,50 +217,24 @@ export async function getHostById(id: string) {
 export async function updateHost(id: string, _prevState: any, formData: FormData) {
 
 
-    const validationPayload: Partial<IHost> = {
+    const validationPayload: any = {
         name: formData.get("name") as string,
-        contactNumber: formData.get("contactNumber") as string,
-        address: formData.get("address") as string,
-        location: formData.get("location") as string,
+        contactNumber: formData.get("contactNumber") as string
     };
 
-    // Parse specialties array (for adding new specialties)
-    const specialtiesValue = formData.get("specialties") as string;
-    if (specialtiesValue) {
-        try {
-            const parsed = JSON.parse(specialtiesValue);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                validationPayload.specialties = parsed;
-            }
-        } catch {
-            // Ignore invalid JSON
-        }
-    }
 
-    // Parse removeSpecialties array (for removing existing specialties)
-    const removeSpecialtiesValue = formData.get("removeSpecialties") as string;
-    if (removeSpecialtiesValue) {
-        try {
-            const parsed = JSON.parse(removeSpecialtiesValue);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                validationPayload.removeSpecialties = parsed;
-            }
-        } catch {
-            // Ignore invalid JSON
-        }
-    }
-    const validatedPayload = zodValidator(validationPayload, updateHostZodSchema);
+    const validation = zodValidator(validationPayload, updateHostZodSchema);
 
-    if (!validatedPayload.success && validatedPayload.errors) {
+    if (!validation.success && validation.errors) {
         return {
-            success: validatedPayload.success,
+            success: validation.success,
             message: "Validation failed",
             formData: validationPayload,
-            errors: validatedPayload.errors,
+            errors: validation.errors,
         }
     }
 
-    if (!validatedPayload.data) {
+    if (!validation.data) {
         return {
             success: false,
             message: "Validation failed",
@@ -269,11 +243,11 @@ export async function updateHost(id: string, _prevState: any, formData: FormData
     }
 
     try {
-        const response = await serverFetch.patch(`/doctor/${id}`, {
+        const response = await serverFetch.patch(`/hosts/update-host/${id}`, {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(validatedPayload.data),
+            body: JSON.stringify(validation.data),
         })
         const result = await response.json();
         return result;
@@ -288,7 +262,7 @@ export async function updateHost(id: string, _prevState: any, formData: FormData
 
 export async function softDeleteHost(id: string) {
     try {
-        const response = await serverFetch.delete(`/doctor/soft/${id}`)
+        const response = await serverFetch.delete(`/host/soft-delete/${id}`)
         const result = await response.json();
 
         return result;
@@ -303,7 +277,7 @@ export async function softDeleteHost(id: string) {
 
 export async function deleteHost(id: string) {
     try {
-        const response = await serverFetch.delete(`/doctor/${id}`)
+        const response = await serverFetch.delete(`/host/${id}`)
         const result = await response.json();
 
         return result;

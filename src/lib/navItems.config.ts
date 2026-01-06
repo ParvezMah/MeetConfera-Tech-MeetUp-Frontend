@@ -56,24 +56,13 @@ export const hostNavItems: NavSection[] = [
     title: "Event Management",
     items: [
       {
-        title: "My Hosted Events",
-        href: "/host/dashboard/my-hosted-events",
-        icon: "CalendarDays",
+        title: "My Events",
+        href: "/host/dashboard/my-events",
+        icon: "Calendar", // ✅ String
         roles: ["HOST"],
       },
     ],
-  },
-  {
-    title: "Earnings",
-    items: [
-      {
-        title: "Payments",
-        href: "/host/dashboard/payment-management",
-        icon: "CreditCard",
-        roles: ["HOST"],
-      },
-    ],
-  },
+  }
 ];
 
 
