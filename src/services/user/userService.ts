@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 
-export interface IAdminFilters {
+export interface IFilters {
   searchTerm?: string;
   [key: string]: any;
 }
@@ -42,7 +42,7 @@ export async function applyHost() {
 }
 
 // Users, Hosts, Events management
-export async function getAllUsers(filters: IAdminFilters = {}, options: IPaginationOptions = {}) {
+export async function getAllUsers(filters: IFilters = {}, options: IPaginationOptions = {}) {
   try {
     const qs = new URLSearchParams();
     Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
@@ -55,7 +55,7 @@ export async function getAllUsers(filters: IAdminFilters = {}, options: IPaginat
   }
 }
 
-export async function getAllAdmins(filters: IAdminFilters = {}, options: IPaginationOptions = {}) {
+export async function getAllAdmins(filters: IFilters = {}, options: IPaginationOptions = {}) {
   try {
     const qs = new URLSearchParams();
     Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
@@ -68,22 +68,10 @@ export async function getAllAdmins(filters: IAdminFilters = {}, options: IPagina
   }
 }
 
-export async function getAllHosts(filters: IAdminFilters = {}, options: IPaginationOptions = {}) {
-  try {
-    const qs = new URLSearchParams();
-    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
-    Object.entries(options).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
-    const res = await serverFetch.get(`/hosts?${qs.toString()}`);
-    return await res.json();
-  } catch (error: any) {
-    console.error('getAllHosts error', error?.message || error);
-    return { success: false, message: error?.message || 'Failed to fetch hosts' };
-  }
-}
 
 // Participants management
 export async function getAllParticipant(
-  filters: IAdminFilters = {},
+  filters: IFilters = {},
   options: IPaginationOptions = {}
 ) {
   try {

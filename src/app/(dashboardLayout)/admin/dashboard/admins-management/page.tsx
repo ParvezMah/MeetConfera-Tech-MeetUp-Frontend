@@ -6,7 +6,7 @@ import AdminsTable from "@/components/modules/admin/AdminsManagement/AdminTable"
 import TablePagination from "@/components/shared/TablePagination";
 import { TableSkeleton } from "@/components/shared/TableSkeleton";
 import { queryStringFormatter } from "@/lib/formatters";
-import { getAdmins } from "@/services/admin/adminsManagement";
+import { getAdmins } from "@/services/admin/admin-adminsManagement";
 import { Suspense } from "react";
 
 const AdminAdminsManagementPage = async ({

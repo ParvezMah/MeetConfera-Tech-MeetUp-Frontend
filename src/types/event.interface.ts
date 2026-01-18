@@ -1,5 +1,7 @@
 // types/event.interface.ts
 
+import { IHost } from "./host.interface";
+
 export enum EventStatus {
   OPEN = "OPEN",
   FULLED = "FULLED",
@@ -28,133 +30,19 @@ export enum EventCategory {
 export interface IEvent {
   id: string;
   eventName: string;
-  description?: string;
-  date: string; // ISO string format
+  description?: string | null;
+  // ISO string from backend
+  date: string;
+  location?: string | null;
   maxParticipants: number;
   minParticipants: number;
-  status: string;
-  image?: string;
+  joinedParticipants: number;
+  joiningFee?: number | null;
+  image?: string | null;
+  status: EventStatus;
+  category: EventCategory;
   hostId: string;
+  host?: IHost;
   createdAt: string;
   updatedAt: string;
-  joiningFee: number;
-  location?: string;
-  category: EventCategory;
-  host?: {
-    id: string;
-    name: string;
-    email: string;
-    profilePhoto?: string | null;
-    rating?: number;
-  };
-  participants?: {
-  id: string;
-  userId: string;
-  status: string;
-  user?: {
-    name: string;
-    email: string;
-  };
 }
-}
-
-// Optional relations
-// host?: {
-//   id: string;
-//   name: string;
-//   email: string;
-//   contactNumber?: string;
-// };
-
-
-
-// payments?: Array<{
-//   id: string;
-//   amount: number;
-//   status: string;
-//   createdAt: string;
-// }>;
-
-// reviews?: Array<{
-//   id: string;
-//   rating: number;
-//   comment?: string;
-//   userId: string;
-//   createdAt: string;
-// }>;
-// }
-
-// // For form submission
-// export interface IEventFormData {
-//   eventName: string;
-//   description?: string;
-//   date: string;
-//   maxParticipants: number;
-//   minParticipants: number;
-//   joiningFee?: number;
-//   location?: string;
-//   category: EventCategory;
-//   hostId: string;
-//   image?: File | string;
-// }
-
-// // For API responses
-// export interface IEventResponse {
-//   success: boolean;
-//   message: string;
-//   data?: IEvent | IEvent[];
-//   formData?: Partial<IEventFormData>;
-//   errors?: Record<string, string[]>;
-// }
-
-// // For table/list display
-// export interface IEventTableItem {
-//   id: string;
-//   eventName: string;
-//   category: EventCategory;
-//   date: string;
-//   location?: string;
-//   maxParticipants: number;
-//   currentParticipants: number;
-//   status: EventStatus;
-//   joiningFee?: number;
-//   hostName: string;
-// }
-
-// // For filters/search
-// export interface IEventFilters {
-//   category?: EventCategory;
-//   status?: EventStatus;
-//   dateFrom?: string;
-//   dateTo?: string;
-//   location?: string;
-//   search?: string;
-// }
-
-// // For participant management
-// export interface IEventParticipant {
-//   id: string;
-//   userId: string;
-//   eventId: string;
-//   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'ATTENDED';
-//   createdAt: string;
-//   user: {
-//     id: string;
-//     name: string;
-//     email: string;
-//     contactNumber?: string;
-//   };
-// }
-
-// // For statistics/dashboard
-// export interface IEventStats {
-//   totalEvents: number;
-//   upcomingEvents: number;
-//   completedEvents: number;
-//   cancelledEvents: number;
-//   totalParticipants: number;
-//   averageParticipants: number;
-//   totalRevenue?: number;
-//   byCategory: Record<EventCategory, number>;
-//   byStatus: Record<EventStatus, number>;
-// }

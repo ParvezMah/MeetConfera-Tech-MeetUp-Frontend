@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { createAdmin, updateAdmin } from "@/services/admin/adminsManagement";
+import { createAdmin, updateAdmin } from "@/services/admin/admin-adminsManagement";
 import { IAdmin } from "@/types/admin.interface";
 import Image from "next/image";
 import { useActionState, useEffect, useRef, useState } from "react";

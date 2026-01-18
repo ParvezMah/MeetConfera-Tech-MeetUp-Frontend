@@ -2,7 +2,7 @@
 
 import DeleteConfirmationDialog from "@/components/shared/DeleteConfirmationDialog";
 import ManagementTable from "@/components/shared/ManagementTable";
-import { getAdmins, softDeleteAdmin } from "@/services/admin/adminsManagement";
+import { getAdmins, softDeleteAdmin } from "@/services/admin/admin-adminsManagement";
 import { IAdmin } from "@/types/admin.interface";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";

@@ -1,38 +1,19 @@
+import { getAllHosts, getSingleHost } from "@/services/admin/admin-hostManagement";
 
-import HostManagementHeader from "@/components/modules/admin/HostsManagement/HostManagementHeader";
-import HostTable from "@/components/modules/admin/HostsManagement/HostTable";
-import TablePagination from "@/components/shared/TablePagination";
-import { TableSkeleton } from "@/components/shared/TableSkeleton";
-import { queryStringFormatter } from "@/lib/formatters";
-import { getHosts } from "@/services/admin/hostsManagement";
-import { Suspense } from "react";
 
-const AdminHostManagementPage = async ({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) => {
-  const searchParamsObj = await searchParams;
-  const queryString = queryStringFormatter(searchParamsObj); // {searchTerm: "John", speciality: "Cardiology" => "?searchTerm=John&speciality=Cardiology"}
-  const hostsResult = await getHosts(queryString);
-  const totalPages = Math.ceil(
-    (hostsResult?.meta?.total || 1) / (hostsResult?.meta?.limit || 1)
-  );
-  return (
-    <div className="space-y-6">
-      <HostManagementHeader />
+const HostsManagementPage = async () => {
+    const AllHosts = await getAllHosts()
+    const hostId = "88458e7b-449b-4399-911a-ec11bc31d466";
+    const SingleHost = await getSingleHost(hostId)
 
-      <Suspense fallback={<TableSkeleton columns={10} rows={10} />}>
-        <HostTable
-          hosts={hostsResult.data}
-        />
-        <TablePagination
-          currentPage={hostsResult?.meta?.page || 1}
-          totalPages={totalPages || 1}
-        />
-      </Suspense>
-    </div>
-  );
+    console.log("All Hosts : ", AllHosts)
+    console.log("Single Host : ", SingleHost)
+    return (
+        <div className="space-y-6">
+            <h1>Hosts Management</h1>
+            {/* <h1>All Hosts : {AllHosts}</h1> */}
+        </div>
+    );
 };
 
-export default AdminHostManagementPage;
+export default HostsManagementPage;
