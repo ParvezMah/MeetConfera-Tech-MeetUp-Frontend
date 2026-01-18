@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { 
+  createEvent,
   deleteEvent, 
   deleteHost, 
   getAllParticipantsOfThisEvents, 
@@ -55,6 +56,34 @@ const HostDashboardPage = async ({ searchParams }: HostDashboardPageProps) => {
   // const hostId = "d6c991f2-66cb-4716-a18e-6bfd3a4ab6fd";
   // const softDeletedHost = await softDeleteHost(hostId);
   // console.log("Soft Deleted Host : ", softDeletedHost);   // Successful
+
+  // const testEventData = {
+  //   eventName: "Next.js Full Stack Meetup 2026",
+  //   category: "WEB_DEVELOPMENT",
+  //   description: "Hands-on full stack event with Next.js, Node.js & Cloud",
+  //   date: "2026-02-15",
+  //   location: "Dhaka",
+  //   joiningFee: 500,
+  //   minParticipants: 10,
+  //   maxParticipants: 100,
+  //   status: "OPEN",
+  // };
+  // const createdEvent = await createEvent(testEventData);
+  // console.log("Created Event Response:", createdEvent);
+
+
+const eventId = "1d82bee4-e0e0-443c-ba2d-224cde113653"; // Event owned by this host
+
+const updateData = {
+  "eventName": "Next.js Meetup Updated 4",
+  "status": "OPEN",
+  "minParticipants": 10,
+  "maxParticipants": 50
+};
+const updatedEvent = await updateEvent(eventId, updateData);
+console.log("Updated Event Response:", updatedEvent);
+
+
 
   return (
       <div>

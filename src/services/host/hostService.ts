@@ -10,7 +10,9 @@ export interface IEventFormData {
   date: string;
   location: string;
   joiningFee: number;
-  capacity: number;
+  maxParticipants: number;
+  minParticipants: number;
+  joinedParticipants: number;
   status?: string;
 }
 
@@ -73,19 +75,19 @@ export async function getEventPayments(eventId: string) {
   }
 }
 
-// export async function createEvent(data: IEventFormData, file?: File) {
-//   try {
-//     const formData = new FormData();
-//     formData.append("data", JSON.stringify(data));
-//     if (file) formData.append("file", file);
+export async function createEvent(data: IEventFormData, file?: File) {
+  try {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(data));
+    if (file) formData.append("file", file);
 
-//     const res = await serverFetch.post("/hosts/create-event", { body: formData });
-//     return await res.json();
-//   } catch (error: any) {
-//     console.error("createEvent error:", error);
-//     return { success: false, message: error?.message || "Failed to create event" };
-//   }
-// }
+    const res = await serverFetch.post("/hosts/create-event", { body: formData });
+    return await res.json();
+  } catch (error: any) {
+    console.error("createEvent error:", error);
+    return { success: false, message: error?.message || "Failed to create event" };
+  }
+}
 
 export async function updateEvent(eventId: string, data: Partial<IEventFormData>, file?: File) {
   try {
