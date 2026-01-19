@@ -1,122 +1,163 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use server"
+"use server";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-
-export interface IFilters {
-  searchTerm?: string;
-  [key: string]: any;
-}
-
-export interface IPaginationOptions {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-}
-
-
 import { serverFetch } from "@/lib/server-fetch";
-import { deleteCookie } from "../auth/tokenHandlers";
 
-export async function applyHost() {
+// ----------------- Interfaces -----------------
+
+export interface ICreateUserData {
+  name: string;
+  email: string;
+  password: string;
+  contactNumber: string;
+  location: string;
+}
+
+export interface ICreateHostData {
+  name: string;
+  email: string;
+  password: string;
+  contactNumber: string;
+  organization?: string;
+}
+
+export interface ICreateAdminData {
+  name: string;
+  email: string;
+  password: string;
+  contactNumber: string;
+}
+
+// ----------------- User APIs -----------------
+
+export async function createUser(data: ICreateUserData, file?: File) {
   try {
-    const response = await serverFetch.post("/auth/apply-host");
+    const formData = new FormData();
 
-    const result = await response.json();
-    if (result.success) {
+    formData.append(
+      "data",
+      JSON.stringify({
+        password: data.password,
+        user: {
+          name: data.name,
+          email: data.email,
+          contactNumber: data.contactNumber,
+          location: data.location,
+        },
+      })
+    );
 
-    await deleteCookie("accessToken");
-    await deleteCookie("refreshToken");
-    }
- 
-    return result;
+    if (file) formData.append("file", file);
 
+    const res = await serverFetch.post("/user/create-user", {
+      body: formData,
+    });
+
+    return await res.json();
   } catch (error: any) {
+    console.error("createUser error:", error);
     return {
       success: false,
-      message: error?.message || "Something went wrong",
+      message: error?.message || "Failed to create user",
     };
   }
 }
 
-// Users, Hosts, Events management
-export async function getAllUsers(filters: IFilters = {}, options: IPaginationOptions = {}) {
+// ----------------- Host APIs -----------------
+
+export async function createHost(data: ICreateHostData, file?: File) {
   try {
-    const qs = new URLSearchParams();
-    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
-    Object.entries(options).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
-    const res = await serverFetch.get(`/user?${qs.toString()}`);
-    return await res.json();
-  } catch (error: any) {
-    console.error('getAllUsers error', error?.message || error);
-    return { success: false, message: error?.message || 'Failed to fetch users' };
-  }
-}
+    const formData = new FormData();
 
-export async function getAllAdmins(filters: IFilters = {}, options: IPaginationOptions = {}) {
-  try {
-    const qs = new URLSearchParams();
-    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
-    Object.entries(options).forEach(([k, v]) => { if (v !== undefined && v !== null) qs.set(k, String(v)); });
-    const res = await serverFetch.get(`/admins?${qs.toString()}`);
-    return await res.json();
-  } catch (error: any) {
-    console.error('getAllAdmins error', error?.message || error);
-    return { success: false, message: error?.message || 'Failed to fetch admins' };
-  }
-}
+    formData.append(
+      "data",
+      JSON.stringify({
+        password: data.password,
+        host: {
+          name: data.name,
+          email: data.email,
+          contactNumber: data.contactNumber,
+          organization: data.organization,
+        },
+      })
+    );
 
+    if (file) formData.append("file", file);
 
-// Participants management
-export async function getAllParticipant(
-  filters: IFilters = {},
-  options: IPaginationOptions = {}
-) {
-  try {
-    const qs = new URLSearchParams();
-
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        qs.set(key, String(value));
-      }
+    const res = await serverFetch.post("/user/create-host", {
+      body: formData,
     });
 
-    Object.entries(options).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        qs.set(key, String(value));
-      }
-    });
-
-    const res = await serverFetch.get(`/participants?${qs.toString()}`);
     return await res.json();
   } catch (error: any) {
-    console.error("getAllParticipant error", error?.message || error);
+    console.error("createHost error:", error);
     return {
       success: false,
-      message: error?.message || "Failed to fetch participants",
+      message: error?.message || "Failed to create host",
+    };
+  }
+}
+
+// ----------------- Admin APIs -----------------
+
+export async function createAdmin(data: ICreateAdminData, file?: File) {
+  try {
+    const formData = new FormData();
+
+    formData.append(
+      "data",
+      JSON.stringify({
+        password: data.password,
+        admin: {
+          name: data.name,
+          email: data.email,
+          contactNumber: data.contactNumber,
+        },
+      })
+    );
+
+    if (file) formData.append("file", file);
+
+    const res = await serverFetch.post("/user/create-admin", {
+      body: formData,
+    });
+
+    return await res.json();
+  } catch (error: any) {
+    console.error("createAdmin error:", error);
+    return {
+      success: false,
+      message: error?.message || "Failed to create admin",
+    };
+  }
+}
+
+export async function deleteUser(userId: string) {
+  try {
+    const res = await serverFetch.delete(`/user/${userId}`);
+
+    return await res.json();
+  } catch (error: any) {
+    console.error("deleteUser error:", error);
+    return {
+      success: false,
+      message: error?.message || "Failed to delete user",
+    };
+  }
+}
+
+export async function softDeleteUser(userId: string) {
+  try {
+    const res = await serverFetch.delete(`/user/soft/${userId}`);
+
+    return await res.json();
+  } catch (error: any) {
+    console.error("softDeleteUser error:", error);
+    return {
+      success: false,
+      message: error?.message || "Failed to soft delete user",
     };
   }
 }
 
 
-export async function updateUserStatus(Id: string, status: string) {
-  try {
-    const res = await serverFetch.patch(`/user/${Id}/status`, { body: JSON.stringify({ status }), headers: { 'Content-Type': 'application/json' } });
-    return await res.json();
-  } catch (error: any) {
-    console.error('updateUserStatus error', error?.message || error);
-    return { success: false, message: error?.message || 'Failed to update user status' };
-  }
-}
-
-export async function deleteUser(Id: string) {
-  try {
-    const res = await serverFetch.delete(`/user/${Id}`);
-    return await res.json();
-  } catch (error: any) {
-    console.error('deleteUser error', error?.message || error);
-    return { success: false, message: error?.message || 'Failed to delete user' };
-  }
-}

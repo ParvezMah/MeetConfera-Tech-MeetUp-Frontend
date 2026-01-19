@@ -1,9 +1,11 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { UserStatus } from "@/types/user.interface";
 
 interface StatusBadgeCellProps {
   isDeleted?: boolean;
+  status?: UserStatus;
   activeText?: string;
   deletedText?: string;
 }

@@ -8,35 +8,34 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { updateHost } from "@/services/host/hostService";
-import { IHost } from "@/types/host.interface";
+import { createAdmin, updateAdmin } from "@/services/admin/admin-adminsManagement";
+import { UserInfo } from "@/types/user.interface";
 import Image from "next/image";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-interface IHostFormDialogProps {
+interface IUserFormDialogProps {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  host?: IHost;
+  user?: UserInfo;
 }
 
-const HostFormDialog = ({
+const UserFormDialog = ({
   open,
   onClose,
   onSuccess,
-  host,
-}: IHostFormDialogProps) => {
+  user,
+}: IUserFormDialogProps) => {
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const isEdit = !!event;
-  const isEditHost = !!host;
+  const isEdit = !!user?.id;
+  //   const { isEditMode, state, formAction, isPending } = useAdminForm(admin);
 
-  const [state, formAction, pending] = useActionState(
-    isEdit ? updateHost.bind(null, host?.id as string) : createHost,
+  const [state, formAction, isPending] = useActionState(
+    isEdit ? updateAdmin.bind(null, user?.id as string) : createAdmin,
     null
   );
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,19 +43,19 @@ const HostFormDialog = ({
     setSelectedFile(file || null);
   };
 
+  // Handle success/error from server
   useEffect(() => {
     if (state?.success) {
       toast.success(state.message || "Operation successful"); // Eikhan theke error ta astece repeated toasdt (Admin created successfully)
       if (formRef.current) {
         formRef.current.reset();
       }
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedFile(null);
       onSuccess();
       onClose();
-    } else if (state && !state.success) {
+    } else if (state?.message && !state.success) {
       toast.error(state.message);
 
+      // Restore file to input after error
       if (selectedFile && fileInputRef.current) {
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(selectedFile);
@@ -66,43 +65,34 @@ const HostFormDialog = ({
   }, [state, onSuccess, onClose, selectedFile]);
 
   const handleClose = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    if (selectedFile) {
-      setSelectedFile(null); // Clear preview
-    }
-    formRef.current?.reset(); // Clear form
-    onClose(); // Close dialog
+    setSelectedFile(null);
+    formRef.current?.reset();
+    onClose();
   };
-
-
-
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-h-[90vh] flex flex-col p-0">
         <DialogHeader className="px-6 pt-6 pb-4">
-          <DialogTitle>{isEditHost ? "Edit Host" : "Add New Host"}</DialogTitle>
+          <DialogTitle>{isEdit ? "Edit Admin" : "Add New Admin"}</DialogTitle>
         </DialogHeader>
 
         <form
           ref={formRef}
           action={formAction}
           className="flex flex-col flex-1 min-h-0"
-        >          
+        >
           <div className="flex-1 overflow-y-auto px-6 space-y-4 pb-4">
+            {/* Basic Information */}
             <Field>
               <FieldLabel htmlFor="name">Name</FieldLabel>
               <Input
                 id="name"
                 name="name"
-                placeholder="Tech Conference 2024"
-                defaultValue={
-                  state?.formData?.host?.name || (isEdit ? host?.name : "")
-                }
+                placeholder="John Doe"
+                defaultValue={state?.formData?.name || user?.name || ""}
               />
-              <InputFieldError state={state} field="eventName" />
+              <InputFieldError field="name" state={state} />
             </Field>
 
             <Field>
@@ -112,7 +102,7 @@ const HostFormDialog = ({
                 name="email"
                 type="email"
                 placeholder="admin@example.com"
-                defaultValue={state?.formData?.email || host?.email || ""}
+                defaultValue={state?.formData?.email || user?.email || ""}
                 disabled={isEdit}
               />
               <InputFieldError field="email" state={state} />
@@ -123,43 +113,45 @@ const HostFormDialog = ({
               <Input
                 id="contactNumber"
                 name="contactNumber"
-                placeholder="A brief contactNumber of the event"
+                placeholder="+1234567890"
                 defaultValue={
-                  state?.formData?.contactNumber || (isEdit ? host?.contactNumber : "")
+                  state?.formData?.contactNumber || user?.contactNumber || ""
                 }
               />
-              <InputFieldError state={state} field="contactNumber" />
+              <InputFieldError field="contactNumber" state={state} />
             </Field>
 
-            <Field>
-              <FieldLabel htmlFor="location">Location</FieldLabel>
-              <Input
-                id="location"
-                name="location"
-                placeholder="123 Main St, City, Country"
-                defaultValue={
-                  state?.formData?.location || (isEditHost ? host?.location : "")
-                }
-              />
-              <InputFieldError state={state} field="location" />
-            </Field>
-
+            {/* Password Field (Create Mode Only) */}
             {!isEdit && (
               <Field>
-                <FieldLabel htmlFor="file">Host Image</FieldLabel>
-                  {selectedFile && (
+                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Enter password"
+                  defaultValue={state?.formData?.password || ""}
+                />
+                <InputFieldError field="password" state={state} />
+              </Field>
+            )}
+
+            {/* Profile Photo (Create Mode Only) */}
+            {!isEdit && (
+              <Field>
+                <FieldLabel htmlFor="file">Profile Photo</FieldLabel>
+                {selectedFile && (
+                  <div className="mb-2">
                     <Image
-                      src={
-                        typeof selectedFile === "string"
-                          ? selectedFile
-                          : URL.createObjectURL(selectedFile)
-                      }
-                      alt="Event Image Preview"
-                      width={100}
-                      height={100}
-                      className="mb-2 rounded-lg"
+                      src={URL.createObjectURL(selectedFile)}
+                      alt="Profile Photo Preview"
+                      width={50}
+                      height={50}
+                      className="rounded-full"
                     />
-                  )}
+                  </div>
+                )}
+
                 <Input
                   ref={fileInputRef}
                   id="file"
@@ -169,28 +161,29 @@ const HostFormDialog = ({
                   onChange={handleFileChange}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Upload an image for the event
+                  Upload a profile photo for the admin
                 </p>
-                <InputFieldError state={state} field="image" />
+                <InputFieldError field="profilePhoto" state={state} />
               </Field>
             )}
           </div>
 
+          {/* Form Actions */}
           <div className="flex justify-end gap-2 px-6 py-4 border-t bg-gray-50">
             <Button
               type="button"
               variant="outline"
-              onClick={onClose}
-              disabled={pending}
+              onClick={handleClose}
+              disabled={isPending}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={pending}>
-              {pending
+            <Button type="submit" disabled={isPending}>
+              {isPending
                 ? "Saving..."
-                : isEditHost
-                ? "Update Host"
-                : "Create Host"}
+                : isEdit
+                ? "Update Admin"
+                : "Create Admin"}
             </Button>
           </div>
         </form>
@@ -199,11 +192,4 @@ const HostFormDialog = ({
   );
 };
 
-export default HostFormDialog;
-
-
-
-
-
-
-
+export default UserFormDialog;

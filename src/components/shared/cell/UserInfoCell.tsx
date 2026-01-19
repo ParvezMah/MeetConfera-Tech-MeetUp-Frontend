@@ -7,7 +7,7 @@ import Image from "next/image";
 interface UserInfoCellProps {
   name: string;
   email: string;
-  profilePhoto?: string | null;
+  profilePhoto?: string | File;
 }
 
 export function UserInfoCell({ name, email, profilePhoto }: UserInfoCellProps) {

@@ -1,17 +1,23 @@
-import { getAllHosts, getSingleHost } from "@/services/admin/admin-hostManagement";
+import HostManagementHeader from "@/components/modules/admin/HostsManagement/HostManagementHeader";
+import { getAllHosts } from "@/services/admin/admin-hostManagement";
+import { Suspense } from "react";
 
 
-const HostsManagementPage = async () => {
-    const AllHosts = await getAllHosts()
-    const hostId = "88458e7b-449b-4399-911a-ec11bc31d466";
-    const SingleHost = await getSingleHost(hostId)
+const HostsManagementPage = async (
+    { searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }
+) => {
+//   const searchParamsObj = await searchParams;
+//   const queryString = queryStringFormatter(searchParamsObj);
+  const allHosts = await getAllHosts();
 
-    console.log("All Hosts : ", AllHosts)
-    console.log("Single Host : ", SingleHost)
     return (
         <div className="space-y-6">
-            <h1>Hosts Management</h1>
-            {/* <h1>All Hosts : {AllHosts}</h1> */}
+            <HostManagementHeader/>
+            <h1>Host Filters</h1>
+            <Suspense fallback={<div>Loading Hosts...</div>}>
+                <h1>Hosts Table</h1>
+                <h1>Table Pagination</h1>
+            </Suspense>
         </div>
     );
 };

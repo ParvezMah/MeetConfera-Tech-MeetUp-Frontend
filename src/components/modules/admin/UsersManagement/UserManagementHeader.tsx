@@ -1,22 +1,31 @@
 "use client";
 
 import ManagementPageHeader from "@/components/shared/ManagementPageHeader";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
-import HostFormDialog from "./HostFormDialog";
-import { Plus } from "lucide-react";
+import AdminFormDialog from "./UserFormDialog";
 
-const HostManagementHeader = () => {
+const UserManagementHeader = () => {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleSuccess = useCallback(() => {
+  const handleSuccess = () => {
     startTransition(() => {
       router.refresh();
     });
-  }, [router, startTransition]);
+  };
 
+
+  // Wrap handleSuccess in useCallback to prevent infinite re-render loop when creating an admin
+  // const handleSuccess = useCallback(()=> {
+  //   startTransition(() => {
+  //     router.refresh();
+  //   });
+  // }, [router]);
+
+  //force remount to reset state of form
   const [dialogKey, setDialogKey] = useState(0);
 
   const handleOpenDialog = () => {
@@ -28,10 +37,9 @@ const HostManagementHeader = () => {
     setIsDialogOpen(false);
   }, []);
 
-
   return (
     <>
-      <HostFormDialog
+      <AdminFormDialog
         key={dialogKey}
         open={isDialogOpen}
         onClose={handleCloseDialog}
@@ -39,10 +47,10 @@ const HostManagementHeader = () => {
       />
 
       <ManagementPageHeader
-        title="Hosts Management"
-        description="Manage Hosts information and details"
+        title="Users Management"
+        description="Manage Users accounts and permissions"
         action={{
-          label: "Add Host",
+          label: "Add User",
           icon: Plus,
           onClick: handleOpenDialog,
         }}
@@ -51,4 +59,7 @@ const HostManagementHeader = () => {
   );
 };
 
-export default HostManagementHeader;
+export default UserManagementHeader;
+
+
+// 72-5 Analysing How Refresh Token Will Work In NextJS
