@@ -18,9 +18,9 @@ interface UserTableProps {
 const UserTable = ({ users }: UserTableProps) => {
   const router = useRouter();
   const [, startTransition] = useTransition();
-  const [deletingPatient, setDeletingPatient] = useState<UserInfo | null>(null);
-  const [viewingPatient, setViewingPatient] = useState<UserInfo | null>(null);
-  const [editingPatient, setEditingPatient] = useState<UserInfo | null>(null);
+  const [deletingUser, setDeletingUser] = useState<UserInfo | null>(null);
+  const [viewingUser, setViewingUser] = useState<UserInfo | null>(null);
+  const [editingUser, setEditingUser] = useState<UserInfo | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleRefresh = () => {
@@ -30,27 +30,27 @@ const UserTable = ({ users }: UserTableProps) => {
   };
 
   const handleView = (user: UserInfo) => {
-    setViewingPatient(user);
+    setViewingUser(user);
   };
 
   const handleEdit = (user: UserInfo) => {
-    setEditingPatient(user);
+    setEditingUser(user);
   };
 
   const handleDelete = (user: UserInfo) => {
-    setDeletingPatient(user);
+    setDeletingUser(user);
   };
 
   const confirmDelete = async () => {
-    if (!deletingPatient) return;
+    if (!deletingUser) return;
 
     setIsDeleting(true);
-    const result = await softDeleteUser(deletingPatient.id!);
+    const result = await softDeleteUser(deletingUser.id!);
     setIsDeleting(false);
 
     if (result.success) {
       toast.success(result.message || "Patient deleted successfully");
-      setDeletingPatient(null);
+      setDeletingUser(null);
       handleRefresh();
     } else {
       toast.error(result.message || "Failed to delete patient");
@@ -71,29 +71,29 @@ const UserTable = ({ users }: UserTableProps) => {
 
       {/* Edit User Form Dialog */}
       <UserFormDialog
-        open={!!editingPatient}
-        onClose={() => setEditingPatient(null)}
-        user={editingPatient!}
+        open={!!editingUser}
+        onClose={() => setEditingUser(null)}
+        user={editingUser!}
         onSuccess={() => {
-          setEditingPatient(null);
+          setEditingUser(null);
           handleRefresh();
         }}
       />
 
       {/* View Patient Detail Dialog */}
       <UserViewDetailDialog
-        open={!!viewingPatient}
-        onClose={() => setViewingPatient(null)}
-        user={viewingPatient}
+        open={!!viewingUser}
+        onClose={() => setViewingUser(null)}
+        user={viewingUser}
       />
 
       {/* Delete Confirmation Dialog */}
       <DeleteConfirmationDialog
-        open={!!deletingPatient}
-        onOpenChange={(open) => !open && setDeletingPatient(null)}
+        open={!!deletingUser}
+        onOpenChange={(open) => !open && setDeletingUser(null)}
         onConfirm={confirmDelete}
         title="Delete User"
-        description={`Are you sure you want to delete ${deletingPatient?.name}? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${deletingUser?.name}? This action cannot be undone.`}
         isDeleting={isDeleting}
       />
     </>
